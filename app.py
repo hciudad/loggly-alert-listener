@@ -7,64 +7,58 @@ import requests
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY')
 
+class ClubHouse_Config(object):
+    CH_URL_BASE = 'https://api/clubhouse.io/api'
+    CH_ADD_STORY_PATH = ('v1/stories')
+    CH_API_TOKEN = os.environ.get('CH_API_TOKEN')
 
-class LeanKit_Config(object):
-    LK_USERNAME = os.environ['LK_USERNAME']
-    LK_PASSWORD = os.environ['LK_PASSWORD']
-    LK_CARD_TYPE_ID = os.environ.get('LK_CARD_TYPE_ID')
-    LK_URL_BASE = 'https://{}.leankit.com'.format(os.environ['LK_DOMAIN'])
-    LK_ADD_CARD_PATH = ('kanban/api/board/{board_id}/AddCard/'
-                        'Lane/{lane_id}/Position/0')
 
-app.config.from_object(LeanKit_Config)
+app.config.from_object(ClubHouse_Config)
 
 
 @app.route('/card', methods=['POST'])
-def create_leankit_card():
+def create_clubhouse_story():
     secret_key = request.args.get('k')
-    board_id = request.args.get('board_id')
-    lane_id = request.args.get('lane_id')
+    project_id = request.args.get('project_id')
+    workflow_state_id = request.args.get('workflow_state_id')
     assigned_user_ids = request.args.getlist('assigned_user_id')
 
     if not app.secret_key or secret_key != app.secret_key:
         print 'Bad secret key: {}'.format(secret_key)
         return 'Not found', 404
 
-    if not board_id:
-        print 'Missing board id'
-        return 'Missing board id', 400
+    if not project_id:
+        print 'Missing project id'
+        return 'Missing project id', 400
 
-    if not lane_id:
-        print 'Missing lane id'
-        return 'Missing lane id', 400
+    if not workflow_state_id:
+        print 'Missing workflow state id'
+        return 'Missing workflow state id', 400
 
     try:
         loggly_alert = json.loads(request.get_data())
         if app.debug:
             print loggly_alert
 
-        lk_card = {
-            "Title": "{alert_name} (Hits: {num_hits}) [{start_time}]".format(
+        ch_card = {
+            "name": "{alert_name} (Hits: {num_hits}) [{start_time}]".format(
                 **loggly_alert),
-            "TypeId": (int(app.config['LK_CARD_TYPE_ID'])
-                       if app.config['LK_CARD_TYPE_ID'] else None),
-            "Description": "\n\n".join(
-                loggly_alert.get('recent_hits', ['No data'])),
-            "Priority": 1,
-            "Size": 0,
-            "AssignedUserIds": assigned_user_ids,
-            "ExternalCardID": "Loggly Alerts",
-            "ExternalSystemName": "Loggly Alert Search",
-            "ExternalSystemUrl": loggly_alert['search_link'],
-            "IsBlocked": False
+            "project_id": project_id,
+            "workflow_state_id": workflow_state_id,
+            "story_type": "bug",
+            "owner_ids": assigned_user_ids,
+            "follower_ids": assigned_user_ids,
+            "description": "\n\n".join(
+                loggly_alert.get('recent_hits', ['No data']))
+
         }
 
-        add_card_url_tmpl = "{LK_URL_BASE}/{LK_ADD_CARD_PATH}".format(
+        add_card_url_tmpl = "{CH_URL_BASE}/{CH_ADD_STORY_PATH}".format(
             **app.config)
         res = requests.post(
-            add_card_url_tmpl.format(board_id=board_id, lane_id=lane_id),
-            data=lk_card,
-            auth=(app.config['LK_USERNAME'], app.config['LK_PASSWORD']))
+            add_card_url_tmpl,
+            data=ch_card,
+            params={'token': app.config.CH_API_TOKEN}
         res.raise_for_status()
     except Exception, ex:
         logging.exception(ex)
