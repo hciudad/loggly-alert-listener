@@ -9,7 +9,7 @@ app.secret_key = os.environ.get('SECRET_KEY')
 
 class ClubHouse_Config(object):
     CH_URL_BASE = 'https://api/clubhouse.io/api'
-    CH_ADD_STORY_PATH = ('v1/stories')
+    CH_ADD_STORY_PATH = 'v1/stories'
     CH_API_TOKEN = os.environ.get('CH_API_TOKEN')
 
 
