@@ -58,7 +58,7 @@ def create_clubhouse_story():
         res = requests.post(
             add_card_url_tmpl,
             data=ch_card,
-            params={'token': app.config.CH_API_TOKEN}
+            params={'token': app.config.CH_API_TOKEN})
         res.raise_for_status()
     except Exception, ex:
         logging.exception(ex)
