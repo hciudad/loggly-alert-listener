@@ -19,8 +19,8 @@ app.config.from_object(ClubHouse_Config)
 @app.route('/card', methods=['POST'])
 def create_clubhouse_story():
     secret_key = request.args.get('k')
-    project_id = request.args.get('project_id')
-    workflow_state_id = request.args.get('workflow_state_id')
+    project_id = request.args.get('project_id', type=int)
+    workflow_state_id = request.args.get('workflow_state_id', type=int)
     assigned_user_ids = request.args.getlist('assigned_user_id')
 
     if not app.secret_key or secret_key != app.secret_key:
