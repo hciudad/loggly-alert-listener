@@ -52,6 +52,8 @@ def create_clubhouse_story():
                 loggly_alert.get('recent_hits', ['No data']))
 
         }
+        if app.debug:
+            print ch_card
 
         add_card_url_tmpl = "{CH_URL_BASE}/{CH_ADD_STORY_PATH}".format(
             **app.config)
