@@ -17,6 +17,14 @@ class ClubHouse_Config(object):
 app.config.from_object(ClubHouse_Config)
 
 
+def format_json(json_string):
+    json_string = json_string.strip()
+    try:
+        return json.dumps(json.loads(json_string), indent=4, sort_keys=True)
+    except ValueError:
+        return json_string
+
+
 @app.route('/card', methods=['POST'])
 def create_clubhouse_story():
     secret_key = request.args.get('k')
@@ -41,7 +49,7 @@ def create_clubhouse_story():
         if app.debug:
             print json.dumps(loggly_alert)
 
-        desc = "\n\n".join([r.strip() for r in
+        desc = "\n\n".join([format_json(r) for r in
                            loggly_alert.get('recent_hits', ['No data'])])
         ch_card = {
             "name": "{alert_name} (Hits: {num_hits}) [{start_time}]".format(
