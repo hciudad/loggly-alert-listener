@@ -7,6 +7,7 @@ import requests
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY')
 
+
 class ClubHouse_Config(object):
     CH_URL_BASE = 'https://api.clubhouse.io'
     CH_ADD_STORY_PATH = 'api/v1/stories'
@@ -38,7 +39,7 @@ def create_clubhouse_story():
     try:
         loggly_alert = json.loads(request.get_data())
         if app.debug:
-            print loggly_alert
+            print json.dumps(loggly_alert)
 
         desc = "\n\n".join([r.strip() for r in
                            loggly_alert.get('recent_hits', ['No data'])])
@@ -54,7 +55,7 @@ def create_clubhouse_story():
 
         }
         if app.debug:
-            print ch_card
+            print json.dumps(ch_card)
 
         add_card_url_tmpl = "{CH_URL_BASE}/{CH_ADD_STORY_PATH}".format(
             **app.config)
@@ -71,4 +72,4 @@ def create_clubhouse_story():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)),
-            debug=os.environ.get('DEBUG', False))
+            debug=os.environ.get('DEBUG', 'false').lower() == 'true')
