@@ -1,7 +1,5 @@
-Loggly Alert → LeanKit Card
-============================
-
 A single purpose service that receives Loggly Alert webhooks, then
-creates cards on a LeanKit board with the alert data.
+creates a Clubhouse story. Previously used for creating LeanKit
+cards.
 
 That's it.
