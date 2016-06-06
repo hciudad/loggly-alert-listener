@@ -40,6 +40,8 @@ def create_clubhouse_story():
         if app.debug:
             print loggly_alert
 
+        desc = "\n\n".join([r.strip() for r in
+                           loggly_alert.get('recent_hits', ['No data'])])
         ch_card = {
             "name": "{alert_name} (Hits: {num_hits}) [{start_time}]".format(
                 **loggly_alert),
@@ -48,8 +50,7 @@ def create_clubhouse_story():
             "story_type": "bug",
             "owner_ids": assigned_user_ids,
             "follower_ids": assigned_user_ids,
-            "description": "\n\n".join(
-                loggly_alert.get('recent_hits', ['No data']))
+            "description": "```\n{}\n```".format(desc)
 
         }
         if app.debug:
@@ -59,7 +60,7 @@ def create_clubhouse_story():
             **app.config)
         res = requests.post(
             add_card_url_tmpl,
-            data=ch_card,
+            json=ch_card,
             params={'token': app.config['CH_API_TOKEN']})
         res.raise_for_status()
     except Exception, ex:
