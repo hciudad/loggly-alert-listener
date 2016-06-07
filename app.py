@@ -59,6 +59,7 @@ def create_clubhouse_story():
             "story_type": "bug",
             "owner_ids": assigned_user_ids,
             "follower_ids": assigned_user_ids,
+            "labels": [dict(external_id="loggly-alert", name="loggly-alert")],
             "description": "```\n{}\n```".format(desc)
 
         }
