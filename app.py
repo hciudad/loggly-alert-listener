@@ -51,6 +51,8 @@ def create_clubhouse_story():
 
         desc = "\n\n".join([format_json(r) for r in
                            loggly_alert.get('recent_hits', ['No data'])])
+        link = "[View Events in Loggly]({})".format(
+            loggly_alert['search_link'])
         ch_card = {
             "name": "{alert_name} (Hits: {num_hits}) [{start_time}]".format(
                 **loggly_alert),
@@ -60,7 +62,7 @@ def create_clubhouse_story():
             "owner_ids": assigned_user_ids,
             "follower_ids": assigned_user_ids,
             "labels": [dict(external_id="loggly-alert", name="loggly-alert")],
-            "description": "```\n{}\n```".format(desc)
+            "description": "{}\n\n```\n{}\n```".format(link, desc)
 
         }
         if app.debug:
