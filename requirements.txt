@@ -2,6 +2,6 @@ click==7.0
 Flask==2.0.0
 itsdangerous==1.1.0
 Jinja2==2.11.3
-MarkupSafe==1.1.1
+MarkupSafe==2.1.4
 requests==2.25.1
 Werkzeug==0.16.0
